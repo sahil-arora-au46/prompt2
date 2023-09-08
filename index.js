@@ -119,7 +119,6 @@ function createTagTreeStructure(tagtreeArr) {
       currentLevel = currentLevel[value];
     }
   }
-
   return structuredTagTree;
 }
 
