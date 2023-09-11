@@ -153,6 +153,5 @@ function textCosineSimilarity(txtA, txtB) {
 function getSimilarityScore(val) {
     return Math.round(val * 100);
 }
-console.log(textCosineSimilarity("Tissue","plant tissue"))
 
 export {textCosineSimilarity}

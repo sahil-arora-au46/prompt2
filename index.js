@@ -87,7 +87,7 @@ console.log(`parentTag`, parentTag);
 console.log("childTag", childTag);
 console.log("childTag1",childTag1);
 console.log("childTag2",childTag2);
-// console.log(`similarChildTags`, similarChildTags);
+console.log(`similarChildTags`, similarChildTags);
 writeFileSync("similartags.json",JSON.stringify(similarChildTags))
 // console.log(tagtree)
 for (let key in tagtree) {
