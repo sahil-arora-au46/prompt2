@@ -105,7 +105,7 @@ function addWordsToDictionary(wordCountmap, dict) {
   for (let key in wordCountmap) {
     dict[key] = true;
   }
-  console.log({ dict });
+  // console.log({ dict });
 }
 
 function wordMapToVector(map, dict) {
@@ -113,7 +113,7 @@ function wordMapToVector(map, dict) {
   for (let term in dict) {
     wordCountVector.push(map[term] || 0);
   }
-  console.log(wordCountVector);
+  // console.log(wordCountVector);
   return wordCountVector;
 }
 

@@ -1,0 +1,1 @@
+{"seating arrangement":{"polygonal arrangement":{"hexagonal arrangement":{},"pentagonal arrangement":{},"octagonal arrangement":{},"quadrilateral arrangement":{},"triangular arrangement":{}},"linear arrangement":{"one row sequence":{},"two row sequence":{}},"floor based arrangement":{},"circular arrangement":{}}}
