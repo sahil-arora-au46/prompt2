@@ -1,12 +1,12 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { textCosineSimilarity } from "./similarity.js";
 
 console.time("functionTime");
 const data = readFileSync("./subjectTagsData.json").toString();
 const tags = {
-  Level1: "Reasoning",
-  Level2: "Seating Arrangement",
-  Level3: "Position",
+  Level1: "Mathematics",
+  Level2: "Circle",
+  Level3: "",
 };
 for (let level in tags) {
   tags[level] = tags[level].toLowerCase();
@@ -19,8 +19,8 @@ const parsedData = JSON.parse(data);
 const subjectTagsData = Object.values(parsedData);
 
 let parentTag;
-let childTag;
-let grandChildTag;
+let childTag = [];
+let grandChildTag = [];
 let childTag1 = [];
 let childTag2 = [];
 const similarChildTags = {};
@@ -35,11 +35,26 @@ function main() {
   extractChildTags();
   const mainChild = findChildTag();
   console.log("mainchild :", mainChild);
-  if (mainChild.children.length === 0) {
-    console.log("no deep tags");
+  if (mainChild) {
+    if (Array.isArray(mainChild)) {
+      writeFileSync("./tagtree.txt", "");
+      mainChild.forEach((child) => {
+        const tagtreeArr = createTagTreeData(child);
+        tree = createTagTreeStructure(tagtreeArr);
+        console.log(`tree`, tree);
+        appendFileSync("./tagtree.txt",`${JSON.stringify(tree)}\n`);
+      });
+    } else {
+      if (mainChild.children.length === 0) {
+        console.log("no deep tags");
+      }
+      const tagtreeArr = createTagTreeData(mainChild);
+      tree = createTagTreeStructure(tagtreeArr);
+      writeFileSync("./tagtree.txt", JSON.stringify(tree));
+    }
+  }else{
+    console.log("-----------------------------------NO CHILD FOUND----------------------------------")
   }
-  const tagtreeArr = createTagTreeData(mainChild);
-  tree = createTagTreeStructure(tagtreeArr);
 }
 main();
 
@@ -51,7 +66,7 @@ function extractChildTags() {
         el.name = el.name.toLowerCase();
         //finding exact matches
         if (el.name === tags.Level2 && el.ancestor.includes(parentTag.id)) {
-          childTag = el;
+          childTag.push(el);
           sameParent.push(el);
         } else if (el.name.includes(tags.Level2)) {
           childTag1.push(el);
@@ -77,11 +92,11 @@ function extractChildTags() {
             el.ancestor.includes(parentTag.id) &&
             el.ancestor.includes(childTag.id)
           ) {
-            grandChildTag = el;
+            grandChildTag.push(el);
           }
         }
         if (el.name === tags.Level3 && el.ancestor.includes(parentTag.id)) {
-          childTag = el;
+          grandChildTag.push(el);
           sameParent.push(el);
         } else if (el.name.includes(tags.Level3)) {
           childTag2.push(el);
@@ -99,9 +114,10 @@ function extractChildTags() {
 
 //function to decide final child tag.
 function findChildTag() {
-  if (grandChildTag) {
+  if (grandChildTag.length !== 0) {
+    console.log("hello");
     return grandChildTag;
-  } else if (childTag) {
+  } else if (childTag.length !== 0) {
     return childTag;
   } else {
     //If no exact matches found
@@ -112,8 +128,8 @@ function findChildTag() {
 
 // finding the  similar child of Level1 tag
 function findSimilarChild(similarChildTags, tags) {
-  let max1 = 0,
-    max2 = 0;
+  let max1 = 0.7,
+    max2 = 0.7;
   let level2tag, level3tag;
   for (let key in similarChildTags) {
     if (tags.Level2) {
@@ -162,7 +178,7 @@ function createTagTreeData(childTag) {
 
   subjectTagsData.forEach((el) => {
     if (el.ancestor) {
-      //tags which includes parent tag and child tag as their ancestor 
+      //tags which includes parent tag and child tag as their ancestor
       if (
         el.ancestor.includes(parentTag.id) ||
         el.ancestor.includes(childTag.id)
@@ -223,20 +239,20 @@ console.log("childTag", childTag);
 console.log("grand child ", grandChildTag);
 // console.log("childTag1", childTag1);
 // console.log("childTag2", childTag2);
-console.log(`similarChildTags`, similarChildTags);
+// console.log(`similarChildTags`, similarChildTags);
 writeFileSync("similartags.json", JSON.stringify(similarChildTags));
 // console.log(tagtree)
 
-const stringifiedTree = JSON.stringify(tree);
+const tempdata = readFileSync("./tagtree.txt")
+const stringifiedTree = JSON.stringify(tempdata);
 const sizeInBytes = new TextEncoder().encode(stringifiedTree).length;
 
-writeFileSync("./tagtree.txt", JSON.stringify(tree));
 console.log(`Approximate size of the object in bytes: ${sizeInBytes}`);
 
 console.timeEnd("functionTime");
 
 for (let key in similarChildTags) {
   if (similarChildTags[key].ancestor.includes(childTag.id)) {
-    console.log(similarChildTags[key], "similar");
+    // console.log(similarChildTags[key], "similar");
   }
 }
