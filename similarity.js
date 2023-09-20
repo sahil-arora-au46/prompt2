@@ -80,6 +80,7 @@ const stopWords = [
   "from",
   "for",
   "d",
+  "none",
   "did",
   "c",
   "e",
