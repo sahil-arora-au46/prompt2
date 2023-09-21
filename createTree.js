@@ -3,12 +3,12 @@ import { textCosineSimilarity } from "./similarity.js";
 
 console.time("functionTime");
 const data = readFileSync("./subjectTagsData.json").toString();
-// const tags = {
-//   Level1: "Physics",
-//   Level2: "",
-//   Level3: "",
-// };
-let tags;
+const tags = {
+    Level1: 'Indian Art and Culture',
+    Level2: 'Ajanta Paintings',
+    Level3: ''
+  }
+// let tags;
 
 const parsedData = JSON.parse(data);
 const subjectTagsData = Object.values(parsedData);
@@ -16,14 +16,14 @@ const subjectTagsData = Object.values(parsedData);
 let parentTag; //Level1 tag
 let childTag = []; //Level2 tag with Level1 as Parent
 let grandChildTag = []; //Level3 tag with Level1 as Parent
-const similarChildTags = {}; //similar child with level1 as parent
+const similarChildTags = []; //similar child with level1 as parent
 let childTag1 = []; //similar level2 tags without level1 as parent
 let childTag2 = []; //similar level3 tags without level1 as parent
 let tree = [];
 let treeArray = [];
 
 export function createTagTree(tag) {
-  tags = tag
+  // tags = tag
   for (let level in tags) {
     if(tags[level]){
       tags[level] = tags[level].toLowerCase();
@@ -69,9 +69,11 @@ export function createTagTree(tag) {
   }
   checktree();
   const finalTree = returnFinalTree()
+  console.log(`finalTree`, finalTree);
   return finalTree;
 
 }
+createTagTree()
 
 //Level2 and Level3 tags are matched from Tag store
 function extractChildTags() {
@@ -86,11 +88,11 @@ function extractChildTags() {
             childTag.push(tag);
           }
           //finding Similar matches
-          else if (
-            tag.name.includes(tags.Level2) ||
-            tags.Level2.includes(tag.name)
-          ) {
-            similarChildTags[tag.name] = tag;
+          else {
+            const similarity = textCosineSimilarity(tags.Level2,tag.name)
+            if(similarity>0.7){
+              similarChildTags.push(tag);
+            }
           }
         }
         // child tag without Level1 as parent
@@ -108,11 +110,11 @@ function extractChildTags() {
         if (parentTag && tag.ancestor.includes(parentTag.id)) {
           if (tag.name === tags.Level3) {
             grandChildTag.push(tag);
-          } else if (
-            tag.name.includes(tags.Level3) ||
-            tags.Level3.includes(tag.name)
-          ) {
-            similarChildTags[tag.name] = tag;
+          }else {
+            const similarity = textCosineSimilarity(tags.Level3,tag.name)
+            if(similarity>0.7){
+              similarChildTags.push(tag);
+            }
           }
         }
         if (tag.name.includes(tags.Level3)) {
@@ -148,46 +150,11 @@ function findChildTag() {
     return grandChildTag;
   } else if (childTag.length !== 0) {
     return childTag;
-  } else {
-    //If no exact matches found
-    const tag = findSimilarChild(similarChildTags, tags);
-    console.log(tags)
-    return tag;
-  }
+  } else if (similarChildTags.length !== 0) {
+    return similarChildTags;
+  } 
 }
 
-// finding the  similar child of Level1 tag
-function findSimilarChild(similarChildTags, tags) {
-  let result = []
-  let max1 = 0.7,
-    max2 = 0.7;
-  let level2tag, level3tag;
-  for (let key in similarChildTags) {
-    if (tags.Level2) {
-      const level2Score = textCosineSimilarity(
-        similarChildTags[key].name,
-        tags.Level2
-      );
-      // console.log(`level2Score`, level2Score, similarChildTags[key].name);
-      if (level2Score > max1) {
-      result.push(similarChildTags[key]);
-      }
-    }
-    if (tags.Level3) {
-      const level3Score = textCosineSimilarity(
-        similarChildTags[key].name,
-        tags.Level3
-      );
-      // console.log(`level3Score`, level3Score, similarChildTags[key].name);
-
-      if (level3Score > max2) {
-        // console.log(similarChildTags[key].name, level3Score);
-        result.push(similarChildTags[key]);
-      }
-    }
-  }
-return result
-}
 
 function checkLevel2AndLevel3Relation() {
   let exactChild = [];
@@ -204,11 +171,7 @@ function checkLevel2AndLevel3Relation() {
   });
   if (exactChild.length !== 0) {
     return exactChild;
-  } else {
-    const child = findSimilarChild(similarTags, tags);
-    // console.log(`similarTags`, child);
-    return child;
-  }
+  } 
 }
 
 function createTree(mainChild) {

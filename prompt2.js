@@ -11,9 +11,9 @@ const parsedData = (JSON.parse(data))
 const question = parsedData[99].Question
 const tags = JSON.parse(parsedData[99].output)
 // const tags = {
-//     Level1: 'Physics',
-//     Level2: 'optics',
-//     Level3: 'Mirrors'
+//     Level1: 'Indian Art and Culture',
+//     Level2: 'Ajanta Paintings',
+//     Level3: ''
 //   }
 const tree = createTagTree(JSON.parse(tags))
 console.log('tree',tree)
