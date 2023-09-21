@@ -164,12 +164,6 @@ function findSimilarChild(similarChildTags, tags) {
   let level2tag, level3tag;
   for (let key in similarChildTags) {
     if (tags.Level2) {
-      if(tags.Level2[(tags.Level2.length - 1)] === 's'){
-        tags.Level2 = tags.Level2.slice(0,-1)
-
-      }else if(similarChildTags[key].name[(similarChildTags[key].name.length - 1)] === 's'){
-        similarChildTags[key].name = similarChildTags[key].name.slice(0,-1)
-      }
       const level2Score = textCosineSimilarity(
         similarChildTags[key].name,
         tags.Level2
@@ -180,12 +174,6 @@ function findSimilarChild(similarChildTags, tags) {
       }
     }
     if (tags.Level3) {
-      if(tags.Level2[(tags.Level2.length - 1)] === 's'){
-        tags.Level2 = tags.Level2.slice(0,-1)
-
-      }else if(similarChildTags[key].name[(similarChildTags[key].name.length - 1)] === 's'){
-        similarChildTags[key].name = similarChildTags[key].name.slice(0,-1)
-      }
       const level3Score = textCosineSimilarity(
         similarChildTags[key].name,
         tags.Level3

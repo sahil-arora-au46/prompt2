@@ -8,12 +8,12 @@ const openai = new OpenAI({
 
 const data = readFileSync("./prompt1output.csv")
 const parsedData = (JSON.parse(data))
-const question = parsedData[109].Question
-const tags = JSON.parse(parsedData[109].output)
+const question = parsedData[99].Question
+const tags = JSON.parse(parsedData[99].output)
 // const tags = {
-//     Level1: 'English',
-//     Level2: 'Spelling Errors',
-//     Level3: 'Word Spelling'
+//     Level1: 'Physics',
+//     Level2: 'optics',
+//     Level3: 'Mirrors'
 //   }
 const tree = createTagTree(JSON.parse(tags))
 console.log('tree',tree)
@@ -22,7 +22,7 @@ console.log('tree',tree)
 const prompt2 =readFileSync("./prompt2.txt").toString();
 const split = prompt2.split(`"""`)
 split.splice(1,0,`"""${tree}"""`)
-const finalPrompt = split.join("").concat(question)
+const finalPrompt = split.join("\n").concat(question)
 console.log(question)
 // console.log(finalPrompt)
 const chatCompletion = await openai.chat.completions.create({

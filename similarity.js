@@ -93,7 +93,10 @@ function wordCountMap(str) {
   words.forEach((w) => {
     // If similarity computation is supposed to be case insensitive
     w = w.toLowerCase();
-
+    //converting plural words to singular
+    if(w[(w.length - 1)] === 's'){
+      w = w.slice(0,-1)
+    }
     //Ignore stop words
     if (stopWords.includes(w)) return;
     wordCount[w] = (wordCount[w] || 0) + 1;
