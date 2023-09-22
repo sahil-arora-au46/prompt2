@@ -1,1 +1,1 @@
-{"ajanta cave paintings":{}}
+{"sectors of economy":{"primary sector":{},"tertiary sector":{},"secondary sector":{},"quinary sector":{},"quaternary sector":{}}}

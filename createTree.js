@@ -3,12 +3,12 @@ import { textCosineSimilarity } from "./similarity.js";
 
 console.time("functionTime");
 const data = readFileSync("./subjectTagsData.json").toString();
-const tags = {
-    Level1: 'Indian Art and Culture',
-    Level2: 'Ajanta Paintings',
-    Level3: ''
-  }
-// let tags;
+// const tags = {
+//     Level1: 'Mathematics',
+//     Level2: 'geometry',
+//     Level3: 'circles'
+//   }
+let tags;
 
 const parsedData = JSON.parse(data);
 const subjectTagsData = Object.values(parsedData);
@@ -23,13 +23,12 @@ let tree = [];
 let treeArray = [];
 
 export function createTagTree(tag) {
-  // tags = tag
+  tags = tag;
   for (let level in tags) {
-    if(tags[level]){
+    if (tags[level]) {
       tags[level] = tags[level].toLowerCase();
     }
   }
-  console.log(tags)
   parentTag = subjectTagsData.find((el) => {
     if (el.height === 0 && el.name.toLowerCase() === tags.Level1) {
       return el;
@@ -39,19 +38,19 @@ export function createTagTree(tag) {
 
   if (parentTag) {
     const mainChild = findChildTag(); //child with parent as Level1
-    if (mainChild.length !==0) {
-      console.log("main",mainChild)
+    if (mainChild.length !== 0) {
+      console.log("main", mainChild);
       createTree(mainChild);
     } else if (childTag1.length !== 0 && childTag2.length !== 0) {
       const relatedChild = checkLevel2AndLevel3Relation();
       if (relatedChild.length !== 0) {
         console.log(`relatedChild`, relatedChild);
         createTree(relatedChild);
-      }else {
-        createTree(parentTag)
+      } else {
+        createTree(parentTag);
       }
     } else {
-      createTree(parentTag)
+      createTree(parentTag);
     }
   } else {
     console.log("----------------------LEVEL1 NOT FOUND-----------------");
@@ -68,12 +67,9 @@ export function createTagTree(tag) {
     }
   }
   checktree();
-  const finalTree = returnFinalTree()
-  console.log(`finalTree`, finalTree);
+  const finalTree = returnFinalTree();
   return finalTree;
-
 }
-createTagTree()
 
 //Level2 and Level3 tags are matched from Tag store
 function extractChildTags() {
@@ -89,8 +85,8 @@ function extractChildTags() {
           }
           //finding Similar matches
           else {
-            const similarity = textCosineSimilarity(tags.Level2,tag.name)
-            if(similarity>0.7){
+            const similarity = textCosineSimilarity(tags.Level2, tag.name);
+            if (similarity > 0.8) {
               similarChildTags.push(tag);
             }
           }
@@ -110,9 +106,9 @@ function extractChildTags() {
         if (parentTag && tag.ancestor.includes(parentTag.id)) {
           if (tag.name === tags.Level3) {
             grandChildTag.push(tag);
-          }else {
-            const similarity = textCosineSimilarity(tags.Level3,tag.name)
-            if(similarity>0.7){
+          } else {
+            const similarity = textCosineSimilarity(tags.Level3, tag.name);
+            if (similarity > 0.8) {
               similarChildTags.push(tag);
             }
           }
@@ -140,21 +136,21 @@ function findChildTag() {
           if (el.ancestor.includes(ele.id)) {
             return ele;
           }
-        });        
+        });
         if (found) {
           return el;
         }
       });
-      if (filtered.length!==0) return filtered;
+      if (filtered.length !== 0) return filtered;
     }
     return grandChildTag;
   } else if (childTag.length !== 0) {
     return childTag;
   } else if (similarChildTags.length !== 0) {
     return similarChildTags;
-  } 
+  }
+  return [];
 }
-
 
 function checkLevel2AndLevel3Relation() {
   let exactChild = [];
@@ -169,9 +165,7 @@ function checkLevel2AndLevel3Relation() {
       }
     });
   });
-  if (exactChild.length !== 0) {
-    return exactChild;
-  } 
+  return exactChild;
 }
 
 function createTree(mainChild) {
@@ -181,7 +175,6 @@ function createTree(mainChild) {
       const tagtreeArr = createTagTreeData(child);
       treeArray.push(tagtreeArr);
       tree = createTagTreeStructure(tagtreeArr);
-      // console.log(`tree`, tagtreeArr);
       appendFileSync("./tagtree.txt", `${JSON.stringify(tree)}\n`);
     });
   } else {
@@ -201,7 +194,6 @@ function createTagTreeData(childTag) {
   let tagtreeArr = [];
   const tagname = {};
   const tagtree = {};
-  // console.log("CHILD : ", childTag);
 
   subjectTagsData.forEach((el) => {
     if (el.ancestor) {
@@ -227,19 +219,17 @@ function createTagTreeData(childTag) {
         if (tagname[el].height >= childTag.height) {
           let index = tagname[el].height - childTag.height;
           temp[index] = tagname[el].name;
-          // console.log(`tagname[el].height`, tagname[el].height);
         } else {
           console.log(el, " not found in tagname");
         }
       }
     });
-    if(childTag.height===0){
-      temp[0] = childTag.name
+    if (childTag.height === 0) {
+      temp[0] = childTag.name;
     }
     temp.push(tagname[key].name);
     tagtreeArr.push(temp);
   }
-  // console.log(`tagtreeArr.length`, tagtreeArr.length);
   return tagtreeArr;
 }
 
@@ -262,7 +252,6 @@ function createTagTreeStructure(tagtreeArr) {
 
 function checktree() {
   const tree = readFileSync("./tagtree.txt").toString();
-  // console.log(`tree.length`, tree);
   if (tree.length < 3000) {
     return;
   }
@@ -276,6 +265,7 @@ function checktree() {
   checktree();
   return;
 }
+
 function trimTagTree() {
   treeArray.forEach((tree) => {
     tree.forEach((branch) => {
@@ -283,29 +273,16 @@ function trimTagTree() {
         branch.splice(branch.length - 2, 2);
       } else if (branch.length >= 2) {
         branch.splice(branch.length - 1, 1);
-      } 
+      }
     });
   });
   return treeArray;
 }
 
-function returnFinalTree(){
-  const tempdata = (readFileSync("./tagtree.txt")).toString();
+function returnFinalTree() {
+  const tempdata = readFileSync("./tagtree.txt").toString();
   const stringifiedTree = JSON.stringify(tempdata);
   return tempdata;
 }
 
-// console.log(`parentTag`, parentTag);
-// console.log("childTag", childTag);
-// console.log("grand child ", grandChildTag);
-// console.log("childTag1", childTag1);
-// console.log("childTag2", childTag2);
-// console.log(`similarChildTags`, similarChildTags);
-// writeFileSync("similartags.json", JSON.stringify(similarChildTags));
-// console.log(tagtree)
-
-// const data1 = checkLevel2AndLevel3Relation();
-// console.log(`data1`, data1);
-
 console.timeEnd("functionTime");
-

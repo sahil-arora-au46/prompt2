@@ -8,14 +8,23 @@ const openai = new OpenAI({
 
 const data = readFileSync("./prompt1output.csv")
 const parsedData = (JSON.parse(data))
-const question = parsedData[99].Question
-const tags = JSON.parse(parsedData[99].output)
-// const tags = {
-//     Level1: 'Indian Art and Culture',
-//     Level2: 'Ajanta Paintings',
-//     Level3: ''
-//   }
-const tree = createTagTree(JSON.parse(tags))
+// const question = parsedData[99].Question
+// const tags = JSON.parse(parsedData[99].output)
+const question = `"Dairy comes under which sector of economic activity?
+
+(1) Tertiary sector
+(2) Primary sector
+(3) Secondary sector
+(4) Quaternary sector"`
+const tags = {
+    Level1: 'Economy',
+    Level2: 'Sectors of economy',
+    Level3: 'null'
+  }
+  
+console.log(tags)
+// const tree = createTagTree(JSON.parse(tags))
+const tree = createTagTree((tags))
 console.log('tree',tree)
 
 
@@ -49,3 +58,4 @@ const chatCompletion = await openai.chat.completions.create({
   console.log(chatCompletion);
   console.log(chatCompletion.choices[0].message.content);
 //   console.log(chatCompletion.choices[0].message.function_call.arguments);
+
