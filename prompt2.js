@@ -58,4 +58,3 @@ const chatCompletion = await openai.chat.completions.create({
   console.log(chatCompletion);
   console.log(chatCompletion.choices[0].message.content);
 //   console.log(chatCompletion.choices[0].message.function_call.arguments);
-

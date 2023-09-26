@@ -1,1 +1,2 @@
-{"sectors of economy":{"primary sector":{},"tertiary sector":{},"secondary sector":{},"quinary sector":{},"quaternary sector":{}}}
+{"mixture and alligation":{}}
+{"mixture and alligation":{"mean price":{},"alligation":{"weighted average method":{},"alligation method":{}},"rule of alligation":{}}}

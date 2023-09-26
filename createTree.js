@@ -3,17 +3,16 @@ import { textCosineSimilarity } from "./similarity.js";
 
 console.time("functionTime");
 const data = readFileSync("./subjectTagsData.json").toString();
-// const tags = {
-//     Level1: 'Mathematics',
-//     Level2: 'geometry',
-//     Level3: 'circles'
-//   }
-let tags;
+let tags = {
+    Level1: 'Mathematics',
+    Level2: 'Mixture and Alligation',
+    Level3: ''
+  }
+// let tags;
 
 const parsedData = JSON.parse(data);
 const subjectTagsData = Object.values(parsedData);
 
-let parentTag; //Level1 tag
 let childTag = []; //Level2 tag with Level1 as Parent
 let grandChildTag = []; //Level3 tag with Level1 as Parent
 const similarChildTags = []; //similar child with level1 as parent
@@ -23,25 +22,45 @@ let tree = [];
 let treeArray = [];
 
 export function createTagTree(tag) {
+  let parentTag;
+  let substituteParentTag;
   tags = tag;
   for (let level in tags) {
     if (tags[level]) {
       tags[level] = tags[level].toLowerCase();
     }
   }
-  parentTag = subjectTagsData.find((el) => {
+  subjectTagsData.forEach((el) => {
     if (el.height === 0 && el.name.toLowerCase() === tags.Level1) {
-      return el;
+      parentTag =el;
     }
+    if(tags.Level1 === "mathematics" && el.name.toLowerCase() === "numerical aptitude" && el.height === 0){
+      substituteParentTag = el;
+    }
+    if(tags.Level1 === "numerical aptitude" && el.name.toLowerCase() === "mathematics" && el.height === 0){
+      substituteParentTag = el;
+    }
+    if(tags.Level1 === "information and communication technology" && el.name.toLowerCase() === "computer awareness" && el.height === 1){
+      substituteParentTag = el;
+    }
+    
   });
-  extractChildTags();
+    extractChildTags(tags,parentTag);
 
   if (parentTag) {
     const mainChild = findChildTag(); //child with parent as Level1
     if (mainChild.length !== 0) {
       console.log("main", mainChild);
       createTree(mainChild);
-    } else if (childTag1.length !== 0 && childTag2.length !== 0) {
+    } else if(substituteParentTag){
+      extractChildTags(tags,substituteParentTag)
+      const substituteMainChild = findChildTag()
+      if(substituteMainChild.length){
+        console.log("substitute parent child",substituteMainChild);
+        createTree(substituteMainChild)
+      }
+
+    }else if (childTag1.length !== 0 && childTag2.length !== 0) {
       const relatedChild = checkLevel2AndLevel3Relation();
       if (relatedChild.length !== 0) {
         console.log(`relatedChild`, relatedChild);
@@ -70,9 +89,10 @@ export function createTagTree(tag) {
   const finalTree = returnFinalTree();
   return finalTree;
 }
+createTagTree(tags)
 
 //Level2 and Level3 tags are matched from Tag store
-function extractChildTags() {
+function extractChildTags(tags,parentTag) {
   if (tags.Level2) {
     subjectTagsData.forEach((tag) => {
       if (tag.ancestor) {
@@ -230,6 +250,7 @@ function createTagTreeData(childTag) {
     temp.push(tagname[key].name);
     tagtreeArr.push(temp);
   }
+  console.log("tagtreearr",tagtreeArr)
   return tagtreeArr;
 }
 
