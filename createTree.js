@@ -335,4 +335,17 @@ function convertToNumberedList(obj, prefix = "") {
   return result;
 }
 
+export function suggestedTags(deepestLevelTag){
+  const ancestor =[];
+  const tagId = Object.keys(tagname).filter((id)=>{
+if(tagname[id].name === deepestLevelTag) return id;
+  });
+if(tagId.length){
+tagId.forEach((id)=>{
+ancestor.push(tagtree[id])
+})
+}
+return ancestor
+}
+
 console.timeEnd("functionTime");
