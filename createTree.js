@@ -3,12 +3,12 @@ import { textCosineSimilarity } from "./similarity.js";
 
 console.time("functionTime");
 const data = readFileSync("./subjectTagsData.json").toString();
-// let tags = {
-//     Level1: 'Mathematics',
-//     Level2: 'Circle',
-//     Level3: ''
-//   }
-let tags;
+let tags = {
+    Level1: 'Mathematics',
+    Level2: 'Mixture and Alligation',
+    Level3: ''
+  }
+// let tags;
 
 const parsedData = JSON.parse(data);
 const subjectTagsData = Object.values(parsedData);
@@ -93,6 +93,7 @@ export function createTagTree(tag) {
   }
   checktree();
   const finalTree = returnFinalTree();
+  console.log("finaltree",finalTree)
   return finalTree;
 }
 createTagTree(tags)
@@ -256,7 +257,7 @@ function createTagTreeData(childTag) {
     temp.push(tagname[key].name);
     tagtreeArr.push(temp);
   }
-  console.log("tagtreearr",tagtreeArr)
+  // console.log("tagtreearr",tagtreeArr)
   return tagtreeArr;
 }
 
@@ -308,8 +309,30 @@ function trimTagTree() {
 
 function returnFinalTree() {
   const tempdata = readFileSync("./tagtree.txt").toString();
-  const stringifiedTree = JSON.stringify(tempdata);
-  return tempdata;
+  console.log(`tempdata.length()`, tempdata.length);
+  const numberListTree = convertToNumberedList(JSON.parse(tempdata))
+  console.log(numberListTree.join("\n").length)
+  return numberListTree;
+}
+function convertToNumberedList(obj, prefix = "") {
+  let result = [];
+  let index = 1;
+
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      let currentPrefix = `${prefix}${index}`;
+      result.push(`${currentPrefix} ${key}`);
+      
+      if (typeof obj[key] === "object" && Object.keys(obj[key]).length > 0) {
+        let sublist = convertToNumberedList(obj[key], `${currentPrefix}.`);
+        result = result.concat(sublist);
+      }
+
+      index++;
+    }
+  }
+
+  return result;
 }
 
 console.timeEnd("functionTime");
