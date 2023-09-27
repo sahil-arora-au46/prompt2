@@ -10,17 +10,14 @@ const data = readFileSync("./prompt1output.csv")
 const parsedData = (JSON.parse(data))
 // const question = parsedData[99].Question
 // const tags = JSON.parse(parsedData[99].output)
-const question = `"Dairy comes under which sector of economic activity?
-
-(1) Tertiary sector
-(2) Primary sector
-(3) Secondary sector
-(4) Quaternary sector"`
+const question = `"Which of the following numbers is completely divisible by 22?
+(1) 51572 (2) 51557
+(3) 55036 (4) 42284"`
 const tags = {
-    Level1: 'Economy',
-    Level2: 'Sectors of economy',
-    Level3: 'null'
-  }
+  Level1: "Numerical Aptitude",
+  Level2: "Divisibilty",
+  Level3: ""
+}
   
 console.log(tags)
 // const tree = createTagTree(JSON.parse(tags))

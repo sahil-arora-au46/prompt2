@@ -3,12 +3,12 @@ import { textCosineSimilarity } from "./similarity.js";
 
 console.time("functionTime");
 const data = readFileSync("./subjectTagsData.json").toString();
-let tags = {
-    Level1: 'Mathematics',
-    Level2: 'Mixture and Alligation',
-    Level3: ''
-  }
-// let tags;
+// let tags = {
+//     Level1: 'Mathematics',
+//     Level2: 'Circle',
+//     Level3: ''
+//   }
+let tags;
 
 const parsedData = JSON.parse(data);
 const subjectTagsData = Object.values(parsedData);
@@ -52,23 +52,29 @@ export function createTagTree(tag) {
     if (mainChild.length !== 0) {
       console.log("main", mainChild);
       createTree(mainChild);
-    } else if(substituteParentTag){
+    } 
+    else if(substituteParentTag){
       extractChildTags(tags,substituteParentTag)
       const substituteMainChild = findChildTag()
       if(substituteMainChild.length){
         console.log("substitute parent child",substituteMainChild);
         createTree(substituteMainChild)
       }
-
-    }else if (childTag1.length !== 0 && childTag2.length !== 0) {
-      const relatedChild = checkLevel2AndLevel3Relation();
-      if (relatedChild.length !== 0) {
-        console.log(`relatedChild`, relatedChild);
-        createTree(relatedChild);
-      } else {
+      
+      else if (childTag1.length !== 0 && childTag2.length !== 0) {
+        const relatedChild = checkLevel2AndLevel3Relation();
+        if (relatedChild.length !== 0) {
+          console.log(`relatedChild`, relatedChild);
+          createTree(relatedChild);
+        } else {
+          createTree(parentTag);
+        }
+      } 
+      else {
         createTree(parentTag);
       }
-    } else {
+    }
+    else {
       createTree(parentTag);
     }
   } else {
